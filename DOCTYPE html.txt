@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kumpulan Panduan Satpam Cerdas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .flipbook-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px; /* Adjust max-width for better readability */
+            height: 550px; /* Fixed height for flipbook pages */
+            perspective: 1500px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            overflow: hidden; /* Ensure content doesn't spill out */
+        }
+        .page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transform-origin: left center;
+            transition: transform 0.6s ease-in-out, z-index 0s 0.3s;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 30px;
+            overflow-y: auto; /* Enable scrolling for long content */
+            box-sizing: border-box;
+            opacity: 0; /* Hidden by default */
+            pointer-events: none; /* Disable interaction when hidden */
+        }
+        .page.active {
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 10;
+            transform: rotateY(0deg);
+            transition: transform 0.6s ease-in-out, opacity 0.3s ease-in-out;
+        }
+        .page.flipped {
+            transform: rotateY(-180deg);
+            z-index: 5;
+            pointer-events: none;
+            opacity: 0; /* Hide flipped pages */
+        }
+        .page.prev {
+            z-index: 9; /* Keep previous page above others but below active */
+            opacity: 1; /* Keep visible until flipped */
+            pointer-events: auto;
+        }
+
+        .page-content h2 {
+            font-size: 1.875rem; /* text-3xl */
+            font-weight: 700; /* font-bold */
+            color: #1a202c; /* gray-900 */
+            margin-bottom: 1.25rem; /* mb-5 */
+        }
+        .page-content h3 {
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 600; /* font-semibold */
+            color: #2d3748; /* gray-800 */
+            margin-top: 1.5rem; /* mt-6 */
+            margin-bottom: 1rem; /* mb-4 */
+        }
+        .page-content h4 {
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 600; /* font-semibold */
+            color: #4a5568; /* gray-700 */
+            margin-top: 1.25rem; /* mt-5 */
+            margin-bottom: 0.75rem; /* mb-3 */
+        }
+        .page-content p {
+            margin-bottom: 1rem; /* mb-4 */
+            line-height: 1.6;
+            color: #4a5568; /* gray-700 */
+        }
+        .page-content ul {
+            list-style-type: disc;
+            margin-left: 1.5rem; /* ml-6 */
+            margin-bottom: 1rem; /* mb-4 */
+            color: #4a5568; /* gray-700 */
+        }
+        .page-content ol {
+            list-style-type: decimal;
+            margin-left: 1.5rem; /* ml-6 */
+            margin-bottom: 1rem; /* mb-4 */
+            color: #4a5568; /* gray-700 */
+        }
+        .page-content li {
+            margin-bottom: 0.5rem; /* mb-2 */
+        }
+        .page-content .visual-recommendation {
+            background-color: #e2e8f0; /* gray-200 */
+            border-left: 4px solid #4299e1; /* blue-500 */
+            padding: 0.75rem 1rem; /* py-3 px-4 */
+            margin-top: 1rem; /* mt-4 */
+            margin-bottom: 1rem; /* mb-4 */
+            border-radius: 0.375rem; /* rounded-md */
+            color: #2d3748; /* gray-800 */
+            font-style: italic;
+        }
+        .page-content .visual-recommendation strong {
+            color: #2b6cb0; /* blue-700 */
+        }
+
+        .navigation-buttons {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 20; /* Above flipbook */
+        }
+        .nav-button {
+            background-color: #4299e1; /* blue-500 */
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .nav-button:hover {
+            background-color: #3182ce; /* blue-600 */
+        }
+        .nav-button:disabled {
+            background-color: #a0aec0; /* gray-400 */
+            cursor: not-allowed;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .flipbook-container {
+                height: 500px;
+            }
+            .page {
+                padding: 20px;
+            }
+            .page-content h2 {
+                font-size: 1.5rem;
+            }
+            .page-content h3 {
+                font-size: 1.25rem;
+            }
+            .page-content h4 {
+                font-size: 1.125rem;
+            }
+            .nav-button {
+                padding: 8px 15px;
+                font-size: 0.875rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .flipbook-container {
+                height: 450px;
+                max-width: 95%;
+            }
+            .page {
+                padding: 15px;
+            }
+            .page-content h2 {
+                font-size: 1.25rem;
+            }
+            .page-content h3 {
+                font-size: 1rem;
+            }
+            .page-content h4 {
+                font-size: 0.875rem;
+            }
+            .navigation-buttons {
+                bottom: 10px;
+                gap: 10px;
+            }
+            .nav-button {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+            }
+        }
+
+        /* Custom styles for specific elements like icons */
+        .icon {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        .icon-shield { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-book { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-map { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-eye { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-chart { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-org { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-lock { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-flowchart { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=?'); }
+        .icon-id { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-car { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-box { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-patrol { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-fire { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-medical { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-disaster { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-threat { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-bomb { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-shift { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-force { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-balance { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=?'); }
+        .icon-equip { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-growth { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-speaker { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-trust { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-pro { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-mic { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-ear { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-question { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=?'); }
+        .icon-pointing { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-body { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-eye-contact { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-face { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-space { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=?'); }
+        .icon-tension { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-calm { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-dialogue { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-help { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-customer { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-radio { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-report { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-culture { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-patient { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=?'); }
+        .icon-writing { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=?'); }
+        .icon-bad { background-image: url('https://placehold.co/24x24/ef4444/ffffff?text=?'); }
+        .icon-good { background-image: url('https://placehold.co/24x24/22c55e/ffffff?text=?'); }
+        .icon-evidence { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-tech { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-template { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+        .icon-checklist { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=?'); }
+        .icon-trophy { background-image: url('https://placehold.co/24x24/4299e1/ffffff?text=??'); }
+
+        .logo-placeholder {
+            width: 150px;
+            height: 150px;
+            background-color: #4299e1;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="flipbook-container">
+        <!-- Page 1: Cover Page -->
+        <div class="page active" id="page-1">
+            <div class="flex flex-col items-center justify-center h-full text-center">
+                <div class="logo-placeholder">SC</div>
+                <h1 class="text-4xl font-bold text-gray-900 mb-4">Kumpulan Panduan Satpam Cerdas</h1>
+                <p class="text-xl text-gray-700 mb-8">Meningkatkan Pengetahuan, Keterampilan, dan Sikap Profesional</p>
+                <p class="text-lg text-gray-600">Oleh: Satpam Cerdas Training Hub</p>
+            </div>
+        </div>
+
+        <!-- Page 2: Table of Contents -->
+        <div class="page" id="page-2">
+            <div class="page-content">
+                <h2 class="text-3xl font-bold text-gray-900 mb-5">Daftar Isi</h2>
+                <ul class="list-none pl-0">
+                    <li class="mb-4">
+                        <h3 class="text-2xl font-semibold text-blue-700 mb-2">1. Panduan Protokol Keamanan Esensial</h3>
+                        <ul class="list-disc ml-6 text-gray-700">
+                            <li>Tujuan dan Pengantar</li>
+                            <li>Prinsip Umum Keamanan</li>
+                            <li>Protokol Kontrol Akses</li>
+                            <li>Protokol Patroli</li>
+                            <li>Protokol Tanggap Darurat</li>
+                            <li>Protokol Pergantian Shift & Serah Terima</li>
+                            <li>Panduan Dasar Penggunaan Kekuatan & Bela Diri</li>
+                            <li>Penanganan & Pemeliharaan Peralatan</li>
+                        </ul>
+                    </li>
+                    <li class="mb-4">
+                        <h3 class="text-2xl font-semibold text-blue-700 mb-2">2. Panduan Komunikasi Efektif untuk Satpam</h3>
+                        <ul class="list-disc ml-6 text-gray-700">
+                            <li>Kekuatan Komunikasi untuk Satpam</li>
+                            <li>Menguasai Komunikasi Verbal</li>
+                            <li>Komunikasi Non-Verbal</li>
+                            <li>Teknik De-eskalasi</li>
+                            <li>Pelayanan Pelanggan untuk Profesional Keamanan</li>
+                            <li>Protokol Komunikasi Radio</li>
+                            <li>Pelaporan & Dokumentasi Efektif</li>
+                            <li>Komunikasi Lintas Budaya di Indonesia</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <h3 class="text-2xl font-semibold text-blue-700 mb-2">3. Menguasai Pelaporan Insiden</h3>
+                        <ul class="list-disc ml-6 text-gray-700">
+                            <li>Peran Krusial Laporan Insiden</li>
+                            <li>Dasar-dasar: 5W dan 1H</li>
+                            <li>Jenis Insiden yang Harus Dilaporkan</li>
+                            <li>Menyusun Laporan Insiden Profesional</li>
+                            <li>Elemen Kunci Laporan yang Baik</li>
+                            <li>Dasar-dasar Pengumpulan & Pelestarian Bukti</li>
+                            <li>Memanfaatkan Teknologi untuk Pelaporan</li>
+                            <li>Kesalahan Umum yang Harus Dihindari</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Handbook 1: Panduan Protokol Keamanan Esensial -->
+        <div class="page" id="page-3">
+            <div class="page-content">
+                <h2 class="text-3xl font-bold text-blue-800 mb-5"><span class="icon icon-shield"></span>1. Panduan Protokol Keamanan Esensial</h2>
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">I. Tujuan dan Pengantar</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Kenapa Protokol Itu Penting?</h4>
+                <p>Protokol membantu kita bekerja lebih efisien, menjaga keamanan lebih baik, patuh pada aturan hukum, dan tentu saja, tampil lebih profesional. Ini seperti peta jalan yang memastikan kita semua bergerak ke arah yang sama.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Infografis sederhana yang menunjukkan panah dari "Protokol" ke "Efisiensi," "Keamanan," "Kepatuhan Hukum," dan "Profesionalisme."
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-4">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">I. Tujuan dan Pengantar (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Peran Satpam</h4>
+                <p>Mari kita ingat kembali peran inti kita sebagai Satpam. Bukan hanya menjaga fisik, tapi juga menciptakan rasa aman, memberikan pelayanan, dan menjadi mata serta telinga yang tajam di lingkungan kerja.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ilustrasi atau foto Satpam yang berwibawa sedang berinteraksi positif (misalnya, membantu pengunjung, mengawasi area).
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Cara Menggunakan Panduan Ini</h4>
+                <p>Panduan ini dirancang agar mudah dipahami. Anda bisa membacanya dari awal sampai akhir, atau langsung mencari bagian yang Anda butuhkan sesuai situasi. Jadikan ini teman setia di saku Anda!</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon buku terbuka atau seseorang sedang membaca, dengan panah menunjuk ke bagian-bagian panduan.
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-5">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">II. Prinsip Umum Keamanan</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">3 D dalam Keamanan: Deteksi, Cegah, Tunda (dan Respons)</h4>
+                <p>Ini adalah inti dari pekerjaan kita. Pertama, kita <strong>Deteksi</strong> potensi masalah. Kedua, kita <strong>Cegah</strong> agar masalah tidak terjadi. Ketiga, jika terjadi, kita <strong>Tunda</strong> dampaknya agar tidak meluas. Terakhir, kita <strong>Respons</strong> dengan tepat.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Infografis dengan tiga lingkaran besar berlabel "Deteksi," "Cegah," "Tunda," dan panah kecil menuju "Respons." Masing-masing lingkaran bisa punya ikon kecil yang relevan (mata untuk deteksi, tangan berhenti untuk cegah, jam pasir untuk tunda).
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-6">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">II. Prinsip Umum Keamanan (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Kewaspadaan Situasional</h4>
+                <p>Selalu sadar dengan apa yang terjadi di sekitar Anda. Perhatikan detail kecil, perubahan, atau hal-hal yang tidak biasa. Mata dan telinga kita adalah alat keamanan terbaik!</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ilustrasi Satpam dengan "gelembung pikiran" yang menunjukkan berbagai elemen lingkungan yang sedang ia perhatikan (pintu, jendela, orang, kendaraan).
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Dasar-dasar Penilaian Risiko</h4>
+                <p>Belajar mengenali potensi ancaman (misalnya, pencurian) dan kerentanan (misalnya, pintu tidak terkunci). Dengan begitu, kita bisa tahu di mana risiko terbesar berada dan fokus pengawasan kita.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Grafik batang sederhana yang menunjukkan "Ancaman" vs. "Kerentanan" dan panah ke "Risiko."
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-7">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">II. Prinsip Umum Keamanan (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Rantai Komando</h4>
+                <p>Pahami siapa atasan Anda dan siapa yang harus Anda lapori. Komunikasi yang jelas dalam rantai komando sangat penting untuk koordinasi yang efektif.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Bagan organisasi sederhana dari bawah ke atas: "Satpam" -> "Supervisor" -> "Manajer Keamanan" -> "Manajemen Puncak."
+                </div>
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">III. Protokol Kontrol Akses</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Manajemen Tamu</h4>
+                <p>Mulai dari menyapa ramah, memeriksa identitas, mencatat di buku tamu, hingga memberikan kartu akses. Pastikan setiap tamu merasa disambut tapi juga terverifikasi.</p>
+            </div>
+        </div>
+
+        <div class="page" id="page-8">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">III. Protokol Kontrol Akses (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Manajemen Tamu (Flowchart)</h4>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Flowchart sederhana: "Tamu Datang" -> "Sapa & Verifikasi ID" -> "Isi Buku Tamu" -> "Berikan Kartu Tamu" -> "Arahkan." Ikon wajah tersenyum untuk "Sapa."
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Akses Personil</h4>
+                <p>Prosedur untuk karyawan, kontraktor, atau vendor. Pastikan hanya yang berhak yang bisa masuk. Apa yang harus dilakukan jika ada yang lupa atau kehilangan ID?</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ilustrasi tangan memegang kartu ID di depan pembaca kartu akses.
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-9">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">III. Protokol Kontrol Akses (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Akses Kendaraan</h4>
+                <p>Dari pemeriksaan kendaraan masuk/keluar, aturan parkir, hingga penanganan kendaraan yang mencurigakan.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ilustrasi Satpam sedang memeriksa bagian bawah mobil dengan cermin atau sedang mencatat plat nomor kendaraan.
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Kontrol Material/Aset</h4>
+                <p>Bagaimana prosedur barang masuk dan keluar? Dokumen apa saja yang harus diperiksa (surat jalan, surat izin)? Ini penting untuk mencegah kehilangan atau pencurian aset.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon kotak atau barang yang masuk/keluar, dengan ikon dokumen di sampingnya.
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-10">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">IV. Protokol Patroli</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Jenis-jenis Patroli</h4>
+                <p>Ada patroli jalan kaki, kendaraan, atau hanya menjaga di pos tetap. Setiap jenis punya kelebihan dan prosedur sendiri.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Tiga ikon berbeda: sepatu untuk patroli jalan kaki, mobil untuk patroli kendaraan, dan pos jaga untuk pos tetap.
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Rute & Frekuensi Patroli</h4>
+                <p>Penting untuk merencanakan rute dan seberapa sering kita harus berpatroli. Jangan mudah ditebak agar keamanan lebih terjaga.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Peta sederhana dengan garis putus-putus menunjukkan rute patroli dan angka "1x/jam" atau "2x/shift."
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-11">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">IV. Protokol Patroli (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Teknik Observasi</h4>
+                <p>Apa yang harus kita cari saat berpatroli? Perilaku mencurigakan, bahaya, atau hal-hal yang tidak pada tempatnya. Latih mata Anda untuk melihat lebih dari sekadar permukaan.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ilustrasi mata yang tajam, fokus pada detail seperti tas yang mencurigakan, jendela yang terbuka, atau orang yang mondar-mandir.
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Pelaporan Saat Patroli</h4>
+                <p>Bagaimana cara melaporkan temuan atau kejadian saat berpatroli? Komunikasi radio yang jelas dan pencatatan di buku log sangat penting.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon walkie-talkie atau buku catatan patroli.
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-12">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">IV. Protokol Patroli (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Pos Pemeriksaan & Area Penting</h4>
+                <p>Ada area-area tertentu yang butuh perhatian ekstra atau prosedur khusus saat patroli. Pastikan Anda tahu di mana saja dan apa yang harus dilakukan di sana.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon bintang atau tanda seru di lokasi-lokasi penting di peta.
+                </div>
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">V. Protokol Tanggap Darurat</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Keselamatan Kebakaran</h4>
+                <p>Langkah-langkah pertama saat ada kebakaran: bunyikan alarm, bantu evakuasi, dan hubungi pemadam kebakaran. Ingat, keselamatan adalah prioritas.</p>
+            </div>
+        </div>
+
+        <div class="page" id="page-13">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">V. Protokol Tanggap Darurat (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Keselamatan Kebakaran (Flowchart)</h4>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Flowchart "Sinyal Kebakaran" -> "Verifikasi" -> "Bunyikan Alarm" -> "Evakuasi" -> "Hubungi Damkar." Ikon api dan sirine.
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Darurat Medis</h4>
+                <p>Apa yang harus dilakukan jika ada yang sakit atau terluka? Panggil bantuan medis, amankan lokasi, dan berikan pertolongan pertama dasar jika Anda terlatih.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon palang merah atau tanda plus. Ilustrasi Satpam sedang memberikan pertolongan pertama sederhana (misalnya, membebat luka).
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-14">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">V. Protokol Tanggap Darurat (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Bencana Alam (Gempa Bumi, Banjir, dll.)</h4>
+                <p>Kesiapsiagaan sebelum bencana, tindakan saat bencana terjadi (berlindung), dan respons setelahnya (penilaian kerusakan, pelaporan).</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon gempa bumi atau gelombang air.
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Ancaman Aktif/Penyusup</h4>
+                <p>Prosedur darurat untuk menghadapi ancaman serius seperti penyusup bersenjata. Ingat prinsip keselamatan diri dan orang lain.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon orang berlari, bersembunyi, atau melawan (sesuai prinsip "Run, Hide, Fight" atau yang setara).
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-15">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">V. Protokol Tanggap Darurat (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Ancaman Bom/Paket Mencurigakan</h4>
+                <p>Bagaimana cara melaporkan, mengevakuasi (jika diinstruksikan), dan yang terpenting, jangan pernah menyentuh benda mencurigakan.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon bom dengan tanda silang atau paket dengan tanda tanya.
+                </div>
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">VI. Protokol Pergantian Shift & Serah Terima</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Pemeriksaan Pra-Serah Terima</h4>
+                <p>Sebelum serah terima, pastikan semua peralatan, buku log, dan kunci sudah diperiksa dan siap.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Checklist sederhana: "Periksa Peralatan," "Periksa Buku Log," "Periksa Kunci."
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-16">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">VI. Protokol Pergantian Shift & Serah Terima (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Briefing Mendetail</h4>
+                <p>Sampaikan semua kejadian penting, masalah yang sedang berlangsung, dan instruksi khusus kepada Satpam yang akan menggantikan Anda. Jangan ada yang terlewat!</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Dua orang Satpam sedang berbicara, satu menunjuk ke buku catatan.
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Verifikasi Pasca-Serah Terima</h4>
+                <p>Pastikan Satpam yang baru sudah memahami semua informasi dan tidak ada pertanyaan. Ini memastikan kelancaran operasional.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon tanda centang besar.
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-17">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">VII. Panduan Dasar Penggunaan Kekuatan & Bela Diri</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Kerangka Hukum (Indonesia)</h4>
+                <p>Pahami batasan hukum tentang kapan dan bagaimana kita boleh menggunakan kekuatan. Ini sangat penting untuk melindungi diri dan menghindari masalah hukum.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon timbangan atau palu hakim.
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Prioritaskan De-eskalasi</h4>
+                <p>Selalu coba selesaikan masalah dengan komunikasi dan negosiasi terlebih dahulu. Kekuatan fisik adalah pilihan terakhir.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon dua orang berbicara dengan tenang, panah ke "Tindakan Fisik" dengan tanda silang.
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-18">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">VII. Panduan Dasar Penggunaan Kekuatan & Bela Diri (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Prinsip Kekuatan Minimum</h4>
+                <p>Gunakan kekuatan seperlunya dan sebanding dengan ancaman yang ada. Jangan berlebihan.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Grafik sederhana yang menunjukkan "Ancaman" vs. "Tingkat Kekuatan yang Digunakan," dengan garis yang seimbang.
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Pelaporan Penggunaan Kekuatan</h4>
+                <p>Setiap kali Anda menggunakan kekuatan, wajib untuk melaporkannya secara detail dan akurat. Ini untuk akuntabilitas dan perlindungan Anda.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon dokumen dengan tulisan "Laporan Penggunaan Kekuatan."
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-19">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">VIII. Penanganan & Pemeliharaan Peralatan</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Perangkat Komunikasi</h4>
+                <p>Cara menggunakan radio atau ponsel dengan benar, memastikan baterai terisi, dan melaporkan kerusakan.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ilustrasi walkie-talkie atau ponsel dengan ikon baterai.
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Sistem CCTV & Pengawasan</h4>
+                <p>Dasar-dasar pemantauan CCTV, mengenali masalah kecil, dan melaporkan jika ada kerusakan.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ilustrasi monitor CCTV dengan beberapa layar.
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-20">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">VIII. Penanganan & Pemeliharaan Peralatan (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Sistem Alarm</h4>
+                <p>Cara mengaktifkan/menonaktifkan alarm dan prosedur saat alarm berbunyi.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon panel alarm atau sirine.
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Kendaraan Patroli</h4>
+                <p>Pemeriksaan rutin sebelum menggunakan kendaraan patroli dan bagaimana melaporkan jika ada masalah.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ilustrasi mobil patroli dengan ikon checklist.
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-21">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">IX. Kesimpulan</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Peningkatan Berkelanjutan</h4>
+                <p>Dunia keamanan terus berubah. Teruslah belajar dan beradaptasi. Panduan ini adalah awal, bukan akhir.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon tangga atau panah melingkar ke atas.
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Satpam Profesional</h4>
+                <p>Dengan mengikuti protokol ini, Anda bukan hanya menjaga keamanan, tapi juga membangun citra diri sebagai Satpam yang cerdas, kompeten, dan profesional.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ilustrasi Satpam yang bangga dengan seragamnya, berdiri tegak.
+                </div>
+            </div>
+        </div>
+
+        <!-- Handbook 2: Panduan Komunikasi Efektif untuk Satpam -->
+        <div class="page" id="page-22">
+            <div class="page-content">
+                <h2 class="text-3xl font-bold text-blue-800 mb-5"><span class="icon icon-speaker"></span>2. Panduan Komunikasi Efektif untuk Satpam</h2>
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">I. Kekuatan Komunikasi untuk Satpam</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Lebih dari Sekadar Kehadiran Fisik</h4>
+                <p>Kita tahu kekuatan fisik penting, tapi komunikasi yang baik bisa membuat peran kita sebagai Satpam jauh lebih efektif. Ini adalah "senjata" tak terlihat yang sangat ampuh!</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ilustrasi Satpam yang kuat secara fisik, lalu panah ke "Komunikasi" dengan ikon gelembung bicara, menunjukkan peningkatan dampak.
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-23">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">I. Kekuatan Komunikasi untuk Satpam (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Membangun Kepercayaan & Hubungan Baik</h4>
+                <p>Dengan komunikasi yang baik, kita bisa membangun kepercayaan. Ini sangat membantu saat kita perlu meredakan situasi tegang atau mengumpulkan informasi penting.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon dua tangan berjabat atau dua orang tersenyum.
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Citra Profesional</h4>
+                <p>Cara kita berkomunikasi mencerminkan siapa kita dan institusi tempat kita bekerja. Komunikasi yang baik akan meningkatkan citra profesional Anda.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ilustrasi Satpam dengan aura profesional, mungkin dikelilingi oleh kata-kata positif seperti "Ramah," "Tegas," "Jelas."
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-24">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">II. Menguasai Komunikasi Verbal</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Jelas & Ringkas</h4>
+                <p>Berbicaralah langsung ke intinya, hindari bahasa yang rumit atau jargon yang tidak semua orang pahami. Pastikan pesan Anda sampai dengan jelas.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon megafon dengan suara yang lurus dan tidak berbelit-belit.
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Nada Suara</h4>
+                <p>Nada suara kita bisa menyampaikan banyak hal. Latih nada yang berwibawa, tenang, dan profesional. Jangan terlalu keras atau terlalu pelan.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Garis gelombang suara yang menunjukkan variasi nada (tenang, tegas, ramah).
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-25">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">II. Menguasai Komunikasi Verbal (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Mendengar Aktif</h4>
+                <p>Ini bukan hanya tentang mendengar kata-kata, tapi juga memahami maksud di baliknya. Berikan perhatian penuh, jangan menyela, dan tunjukkan bahwa Anda benar-benar mendengarkan.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon telinga yang besar dengan panah masuk ke otak, dan ikon mata yang fokus.
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Mengajukan Pertanyaan Efektif</h4>
+                <p>Belajar bertanya dengan cara yang tepat untuk mendapatkan informasi yang Anda butuhkan. Kapan menggunakan pertanyaan terbuka, kapan pertanyaan tertutup.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon tanda tanya yang terbagi dua: satu untuk pertanyaan terbuka (misalnya, "Bagaimana situasinya?") dan satu untuk pertanyaan tertutup (misalnya, "Apakah Anda melihatnya?").
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-26">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">II. Menguasai Komunikasi Verbal (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Memberikan Instruksi yang Jelas</h4>
+                <p>Saat memberikan instruksi, pastikan mudah dipahami dan tidak menimbulkan keraguan. Ulangi jika perlu, dan pastikan orang yang Anda ajak bicara mengerti.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon tangan menunjuk dengan jelas ke arah tertentu.
+                </div>
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">III. Komunikasi Non-Verbal: Apa yang Dikatakan Tubuh Anda</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Bahasa Tubuh</h4>
+                <p>Postur, gerakan tangan, dan cara Anda berdiri semuanya berbicara. Pastikan bahasa tubuh Anda mendukung pesan verbal Anda.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ilustrasi siluet orang dengan berbagai pose: tegak (percaya diri), condong ke depan (mendengarkan), tangan terbuka (terbuka).
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-27">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">III. Komunikasi Non-Verbal (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Kontak Mata</h4>
+                <p>Pertahankan kontak mata yang tepat. Ini menunjukkan kepercayaan diri dan rasa hormat, tapi jangan sampai terlihat mengintimidasi.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon dua mata yang saling menatap dengan garis lurus di antaranya.
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Ekspresi Wajah</h4>
+                <p>Ekspresi wajah Anda bisa menyampaikan banyak hal. Latih ekspresi yang profesional dan sesuai dengan situasi.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon wajah dengan ekspresi berbeda (serius, ramah, tenang).
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-28">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">III. Komunikasi Non-Verbal (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Jarak Pribadi</h4>
+                <p>Hormati ruang pribadi orang lain sesuai norma budaya. Jangan terlalu dekat atau terlalu jauh.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Dua siluet orang dengan lingkaran di sekelilingnya, menunjukkan jarak yang nyaman.
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Membaca Bahasa Tubuh Orang Lain</h4>
+                <p>Latih diri Anda untuk mengenali tanda-tanda non-verbal dari orang lain, seperti tanda-tanda stres, agresi, atau ketidakjujuran.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ilustrasi mata yang jeli melihat tanda-tanda non-verbal (misalnya, tangan mengepal, gelisah, mata menghindar).
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-29">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">IV. Teknik De-eskalasi</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Mengenali Eskalasi</h4>
+                <p>Belajar mengenali tanda-tanda awal ketegangan atau kemarahan, baik dari kata-kata maupun bahasa tubuh.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Grafik garis yang menanjak, menunjukkan tingkat ketegangan yang meningkat, dengan ikon tanda seru di puncaknya.
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Tetap Tenang di Bawah Tekanan</h4>
+                <p>Kunci untuk meredakan situasi adalah tetap tenang. Latih teknik pernapasan atau mental untuk menjaga ketenangan Anda.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon orang yang sedang menarik napas dalam-dalam atau ikon "otak tenang."
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-30">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">IV. Teknik De-eskalasi (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Strategi De-eskalasi Verbal</h4>
+                <p>Gunakan kata-kata yang menenangkan, tunjukkan empati, berikan pilihan yang masuk akal, dan tetapkan batasan dengan tegas tapi sopan.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Daftar poin dengan ikon gelembung bicara: "Empati," "Tawarkan Pilihan," "Tentukan Batasan," "Hindari Konfrontasi."
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">De-eskalasi Non-Verbal</h4>
+                <p>Posisi tubuh, gerakan, dan ekspresi wajah Anda bisa membantu meredakan ketegangan.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ilustrasi Satpam dengan postur terbuka, tangan tidak mengepal, dan posisi tubuh yang tidak mengancam.
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-31">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">IV. Teknik De-eskalasi (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Kapan Memanggil Bantuan</h4>
+                <p>Pahami kapan situasi sudah di luar kendali Anda dan Anda perlu memanggil bantuan atau cadangan.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon telepon darurat atau dua orang Satpam saling membantu.
+                </div>
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">V. Pelayanan Pelanggan untuk Profesional Keamanan</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">"Pelayanan" dalam Keamanan</h4>
+                <p>Ingat, kita adalah penyedia layanan keamanan. Sikap melayani sangat penting untuk menciptakan lingkungan yang ramah dan aman.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon perisai (keamanan) yang juga memiliki ikon hati (pelayanan).
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-32">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">V. Pelayanan Pelanggan untuk Profesional Keamanan (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Kesan Pertama</h4>
+                <p>Sapaan pertama, penampilan, dan cara Anda berinteraksi di awal sangat menentukan kesan orang terhadap Anda.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ilustrasi Satpam tersenyum ramah di pintu masuk.
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Menangani Pertanyaan & Arah</h4>
+                <p>Jadilah sumber informasi yang membantu. Berikan arahan atau jawaban dengan jelas dan sopan.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon tanda tanya dan panah arah.
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-33">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">V. Pelayanan Pelanggan untuk Profesional Keamanan (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Mengelola Keluhan & Frustrasi</h4>
+                <p>Dengarkan keluhan dengan sabar, tunjukkan empati, dan coba bantu mencari solusi.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ilustrasi orang yang mengeluh dan Satpam yang mendengarkan dengan sabar.
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Sikap Profesional</h4>
+                <p>Tetap tenang, sopan, dan hormat dalam setiap interaksi, bahkan dalam situasi sulit.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon wajah tenang dan percaya diri.
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-34">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">VI. Protokol Komunikasi Radio</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Pentingnya Komunikasi Radio yang Jelas</h4>
+                <p>Komunikasi radio yang baik adalah kunci untuk koordinasi cepat dan respons yang efektif di lapangan.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon walkie-talkie dengan gelombang suara yang jelas.
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Prosedur Radio Standar</h4>
+                <p>Pelajari cara menggunakan call sign, alfabet fonetik, dan kode-kode umum (misalnya "10-4"). Sampaikan pesan dengan singkat, padat, dan jelas.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Daftar poin: "Gunakan Call Sign," "Alfabet Fonetik," "Kode 10," "Pesan Singkat."
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-35">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">VI. Protokol Komunikasi Radio (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Mengatasi Masalah Radio Dasar</h4>
+                <p>Apa yang harus dilakukan jika radio Anda bermasalah? Kenali masalah dasar dan cara mengatasinya.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon walkie-talkie dengan ikon kunci pas kecil.
+                </div>
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">VII. Pelaporan & Dokumentasi Efektif</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Briefing Verbal</h4>
+                <p>Saat memberikan laporan lisan, pastikan ringkas, akurat, dan langsung ke poin utama.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon dua orang berbicara dengan gelembung bicara yang singkat dan padat.
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-36">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">VII. Pelaporan & Dokumentasi Efektif (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Pentingnya Laporan Tertulis</h4>
+                <p>Laporan tertulis adalah bukti penting untuk akuntabilitas dan proses hukum. Pastikan laporan Anda jelas dan lengkap.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon dokumen dengan tulisan "Laporan."
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Informasi Kunci yang Harus Disampaikan</h4>
+                <p>Selalu sertakan informasi dasar: Siapa, Apa, Kapan, Di mana, Kenapa (jika diketahui), dan Bagaimana.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Infografis "5W+1H" (Siapa, Apa, Kapan, Di mana, Kenapa, Bagaimana).
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-37">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">VIII. Komunikasi Lintas Budaya di Indonesia</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Menghormati Adat & Etika Lokal</h4>
+                <p>Indonesia kaya akan budaya. Pahami dan hormati adat serta etika setempat saat berinteraksi dengan orang dari berbagai latar belakang.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ilustrasi orang dengan pakaian adat daerah yang berbeda-beda, saling menyapa.
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Nuansa Bahasa</h4>
+                <p>Kenali frasa umum atau dialek lokal yang bisa membantu Anda berkomunikasi lebih baik.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon gelembung bicara dengan beberapa kata Bahasa Indonesia yang umum (misalnya, "Permisi," "Terima Kasih," "Mohon Maaf").
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-38">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">VIII. Komunikasi Lintas Budaya di Indonesia (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Kesabaran & Pemahaman</h4>
+                <p>Jika ada kendala bahasa atau perbedaan budaya, bersabarlah dan coba pahami. Komunikasi yang baik butuh usaha dari kedua belah pihak.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon jam pasir atau dua orang saling mengerti.
+                </div>
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">IX. Kesimpulan</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Latihan Membuat Sempurna</h4>
+                <p>Keterampilan komunikasi butuh latihan. Teruslah berlatih dan tingkatkan kemampuan Anda setiap hari.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon otot yang terbentuk atau orang yang berlatih.
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-39">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">IX. Kesimpulan (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Satpam yang Komunikatif</h4>
+                <p>Dengan komunikasi yang kuat, Anda akan menjadi Satpam yang lebih efektif, dihormati, dan cerdas. Ini akan membuka banyak pintu untuk karier Anda!</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ilustrasi Satpam yang tersenyum dan berbicara dengan percaya diri.
+                </div>
+            </div>
+        </div>
+
+        <!-- Handbook 3: Menguasai Pelaporan Insiden -->
+        <div class="page" id="page-40">
+            <div class="page-content">
+                <h2 class="text-3xl font-bold text-blue-800 mb-5"><span class="icon icon-report"></span>3. Menguasai Pelaporan Insiden</h2>
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">I. Peran Krusial Laporan Insiden</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Kenapa Laporan Itu Penting?</h4>
+                <p>Laporan bukan sekadar formalitas. Ini adalah bukti hukum, sumber informasi penting untuk perbaikan, dan cara kita menunjukkan akuntabilitas atas tugas kita.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Infografis yang menunjukkan panah dari "Laporan" ke "Bukti Hukum," "Intelijen Operasional," "Akuntabilitas," dan "Peningkatan Berkelanjutan."
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-41">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">I. Peran Krusial Laporan Insiden (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Konsekuensi Pelaporan yang Buruk</h4>
+                <p>Laporan yang tidak jelas bisa menyebabkan kesalahpahaman, masalah hukum, atau bahkan membuat kita kehilangan kesempatan untuk mencegah insiden serupa di masa depan.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon tanda silang besar di atas laporan yang berantakan atau tidak jelas.
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Laporan Anda, Warisan Anda</h4>
+                <p>Laporan yang Anda tulis mencerminkan profesionalisme Anda. Laporan yang baik adalah bukti kerja keras dan ketelitian Anda.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ilustrasi laporan yang rapi dan profesional dengan stempel "Sangat Baik."
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-42">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">II. Dasar-dasar: 5W dan 1H</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Siapa (Who):</h4>
+                <p>Siapa saja yang terlibat? Korban, saksi, terduga, atau petugas yang merespons. Sebutkan nama lengkap dan peran mereka.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon siluet orang dengan tanda tanya.
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Apa (What):</h4>
+                <p>Apa yang sebenarnya terjadi? Jelaskan sifat insiden, tindakan yang diambil, dan apa yang Anda amati.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon tanda seru atau gelembung bicara dengan tulisan "Apa yang terjadi?"
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-43">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">II. Dasar-dasar: 5W dan 1H (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Kapan (When):</h4>
+                <p>Kapan insiden itu terjadi? Tanggal, waktu mulai dan berakhir, serta urutan kejadian secara kronologis.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon jam atau kalender.
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Di mana (Where):</h4>
+                <p>Di mana lokasi persisnya? Alamat, gedung, lantai, ruangan, atau titik spesifik di area tersebut.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon pin lokasi di peta.
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-44">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">II. Dasar-dasar: 5W dan 1H (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Kenapa (Why - jika diketahui):</h4>
+                <p>Kenapa insiden itu terjadi? Apa motifnya, atau apa penyebabnya? Ingat, sampaikan fakta, bukan asumsi.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon tanda tanya besar.
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Bagaimana (How):</h4>
+                <p>Bagaimana insiden itu terjadi? Jelaskan metode atau cara insiden tersebut berlangsung.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon roda gigi atau panah berurutan.
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-45">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">III. Jenis Insiden yang Harus Dilaporkan</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Pelanggaran Keamanan:</h4>
+                <p>Akses tidak sah, penyusupan, atau pelanggaran batas area.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon gembok terbuka atau pagar yang rusak.
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Pencurian & Perusakan:</h4>
+                <p>Kehilangan properti, kerusakan barang, atau vandalisme.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon dompet kosong atau barang yang pecah.
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-46">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">III. Jenis Insiden yang Harus Dilaporkan (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Darurat Medis:</h4>
+                <p>Cedera, sakit mendadak, atau tindakan pertolongan pertama yang diberikan.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon palang merah.
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Kebakaran & Bahaya Keamanan:</h4>
+                <p>Insiden kebakaran, tumpahan bahan berbahaya, atau kerusakan peralatan yang membahayakan.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon api atau tanda bahaya.
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-47">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">III. Jenis Insiden yang Harus Dilaporkan (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Aktivitas Mencurigakan:</h4>
+                <p>Perilaku aneh, barang yang ditinggalkan, atau hal-hal yang tidak biasa.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon mata mengintip atau orang dengan tanda tanya.
+                </div>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Gangguan & Konflik:</h4>
+                <p>Perkelahian, argumen, atau pelecehan.</p>
+                <div class="visual-recommendation">
+                    <strong>Visual:</strong> Ikon dua orang bertengkar.
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-48">
+            <div class="page-content">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">III. Jenis Insiden yang Harus Dilaporkan (Lanjutan)</h3>
+                <h4 class="text-xl font-semibold text-gray-700 mb-3">Kecelakaan:</h4>
+                <p>Terpeleset, j
